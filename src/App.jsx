@@ -7,13 +7,14 @@ function App() {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [originalFileName, setOriginalFileName] = useState("");
 
   const handleFileDrop = async (e) => {
     e.preventDefault();
-    setDragging(false);
+    setDragging(false); 
     setLoading(true);
 
-    const file = e.dataTransfer?.files?.[0] || e.target.files?.[0];
+    const file = e.dataTransfer?.files?.[0] || e.target.files?.[0]; 
 
     if (!file || !file.name.endsWith(".pages")) {
       alert("Please upload a .pages file!");
@@ -21,8 +22,11 @@ function App() {
       return;
     }
 
+    const fileNameWithoutExtension = file.name.replace(/\.pages$/, "");
+    setOriginalFileName(fileNameWithoutExtension);
+
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file); // Append the file to the FormData object, a formdata object is used to send files in a multipart/form-data request
 
     try {
       const response = await axios.post("http://localhost:8000/convert", formData, {
@@ -30,7 +34,7 @@ function App() {
       });
 
       const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob); //createObjectURL creates a DOMString containing a URL representing the object given in the parameter
       setPdfUrl(url);
     } catch (err) {
       alert("Conversion failed. Make sure the backend is running.");
@@ -75,7 +79,7 @@ function App() {
           <embed src={pdfUrl} type="application/pdf" width="100%" height="600px" className="border rounded-lg" />
           <a
             href={pdfUrl}
-            download="converted.pdf"
+            download={`${originalFileName}.pdf`}
             className="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition"
           >
             Download PDF
