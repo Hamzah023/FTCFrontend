@@ -16,7 +16,7 @@ function App() {
     const file = e.dataTransfer?.files?.[0] || e.target.files?.[0];
 
     if (!file || !file.name.endsWith(".pages")) {
-      alert("Please upload a .pages file");
+      alert("Please upload a .pages file!");
       setLoading(false);
       return;
     }
